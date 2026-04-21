@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>辩手分院 · The Sorting of Debaters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0a10;--ink:#f3e8cf;--ink-dim:rgba(243,232,207,0.62);--ink-mute:rgba(243,232,207,0.32);--gold:#c9a24a;--gold-soft:#a98638;--gold-dim:#6d5523;--border:rgba(243,232,207,0.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100vh;font-family:'Noto Serif SC','Cormorant Garamond',serif;background:var(--bg);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(ellipse at 22% 18%,rgba(201,162,74,0.10),transparent 55%),radial-gradient(ellipse at 78% 82%,rgba(201,162,74,0.07),transparent 58%),radial-gradient(ellipse at 50% 50%,rgba(40,30,60,0.35),transparent 70%),var(--bg);position:relative}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:0.05;z-index:1;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>")}
+main{position:relative;z-index:2;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:72px 24px}
+.screen{width:100%;max-width:720px;display:none}
+.screen.active{display:block;animation:fadeUp 0.65s cubic-bezier(0.22,1,0.36,1) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes expand{from{width:0;opacity:0}to{width:64px;opacity:1}}
+@keyframes pulse{0%,100%{opacity:0.3;transform:scale(0.85)}50%{opacity:1;transform:scale(1.15)}}
+.corner{position:fixed;width:34px;height:34px;pointer-events:none;opacity:0.55;z-index:3}
+.corner.tl{top:22px;left:22px;border-top:1px solid var(--gold);border-left:1px solid var(--gold)}
+.corner.tr{top:22px;right:22px;border-top:1px solid var(--gold);border-right:1px solid var(--gold)}
+.corner.bl{bottom:22px;left:22px;border-bottom:1px solid var(--gold);border-left:1px solid var(--gold)}
+.corner.br{bottom:22px;right:22px;border-bottom:1px solid var(--gold);border-right:1px solid var(--gold)}
+.intro{text-align:center}
+.eyebrow{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;letter-spacing:0.38em;text-transform:uppercase;color:var(--gold);margin-bottom:28px;opacity:0;animation:reveal 0.8s ease 0.1s forwards}
+.title{font-family:'Noto Serif SC',serif;font-weight:500;font-size:clamp(42px,7.4vw,72px);line-height:1.08;letter-spacing:0.08em;margin-bottom:14px;opacity:0;animation:reveal 0.9s ease 0.25s forwards}
+.title em{font-style:normal;color:var(--gold);font-weight:600}
+.subtitle-en{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;letter-spacing:0.14em;color:var(--ink-dim);margin-bottom:34px;opacity:0;animation:reveal 0.9s ease 0.4s forwards}
+.divider{height:1px;background:var(--gold);margin:0 auto 36px;opacity:0;animation:expand 0.8s ease 0.55s forwards}
+.intro-text{font-size:16px;line-height:2;color:var(--ink-dim);max-width:520px;margin:0 auto 40px;opacity:0;animation:reveal 0.9s ease 0.7s forwards}
+.intro-text .accent{color:var(--ink);font-style:italic}
+.intro-meta{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12.5px;letter-spacing:0.3em;color:var(--ink-mute);margin-top:26px;opacity:0;animation:reveal 0.9s ease 1s forwards}
+.btn{display:inline-block;font-family:'Noto Serif SC',serif;font-size:14px;font-weight:500;letter-spacing:0.38em;color:var(--bg);background:var(--gold);border:1px solid var(--gold);padding:18px 38px;cursor:pointer;transition:all 0.35s cubic-bezier(0.22,1,0.36,1);position:relative}
+.btn:hover{background:var(--ink);border-color:var(--ink);transform:translateY(-2px);box-shadow:0 10px 30px rgba(201,162,74,0.18)}
+.btn.appear{opacity:0;animation:reveal 0.9s ease 0.85s forwards}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--border)}
+.btn.ghost:hover{background:transparent;border-color:var(--gold);color:var(--gold);box-shadow:none}
+.progress-bar{display:flex;align-items:center;gap:14px;margin-bottom:54px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;letter-spacing:0.22em;color:var(--ink-mute)}
+.progress-track{flex:1;height:1px;background:var(--border);position:relative;overflow:hidden}
+.progress-fill{position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform 0.6s cubic-bezier(0.65,0,0.35,1)}
+.q-tag{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;letter-spacing:0.32em;color:var(--gold);margin-bottom:18px}
+.q-text{font-family:'Noto Serif SC',serif;font-weight:500;font-size:clamp(22px,3.4vw,30px);line-height:1.55;letter-spacing:0.04em;margin-bottom:42px;max-width:640px}
+.options{display:flex;flex-direction:column;gap:12px}
+.option{background:transparent;border:1px solid var(--border);padding:20px 24px;color:var(--ink);font-family:'Noto Serif SC',serif;font-size:15.5px;line-height:1.6;text-align:left;cursor:pointer;transition:all 0.32s cubic-bezier(0.22,1,0.36,1);position:relative;display:flex;align-items:baseline;gap:14px}
+.option::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--gold);transform:scaleY(0);transform-origin:bottom;transition:transform 0.35s ease}
+.option:hover{border-color:var(--gold);padding-left:32px;background:rgba(201,162,74,0.04)}
+.option:hover::before{transform:scaleY(1);transform-origin:top}
+.option .mark{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);font-size:14px;letter-spacing:0.08em;flex-shrink:0}
+.sorting{text-align:center;padding:40px 0}
+.sorting-crest{font-family:'Noto Serif SC',serif;font-size:44px;color:var(--gold);letter-spacing:0.6em;padding-left:0.6em;margin-bottom:28px;animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:0.55}50%{opacity:1}}
+.sorting-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;letter-spacing:0.3em;color:var(--ink-dim);margin-bottom:28px}
+.sorting-cn{font-family:'Noto Serif SC',serif;font-size:14px;letter-spacing:0.5em;color:var(--ink-mute);padding-left:0.5em;margin-bottom:34px}
+.sorting-dots{display:inline-flex;gap:10px}
+.sorting-dots span{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 1.4s ease-in-out infinite}
+.sorting-dots span:nth-child(2){animation-delay:0.2s}
+.sorting-dots span:nth-child(3){animation-delay:0.4s}
+.result{text-align:center}
+.crest{display:inline-block;width:120px;height:120px;line-height:116px;font-family:'Noto Serif SC',serif;font-weight:500;font-size:56px;color:var(--gold);border:1px solid var(--gold);border-radius:50%;position:relative;margin-bottom:24px;opacity:0;animation:reveal 1s ease 0.2s forwards}
+.crest::before{content:"";position:absolute;inset:7px;border:1px solid var(--gold-dim);border-radius:50%}
+.r-title{font-family:'Noto Serif SC',serif;font-weight:600;font-size:clamp(36px,5.6vw,50px);letter-spacing:0.2em;color:var(--gold);margin-bottom:8px;padding-left:0.2em;opacity:0;animation:reveal 0.9s ease 0.4s forwards}
+.r-title-en{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;letter-spacing:0.28em;color:var(--ink-dim);margin-bottom:32px;opacity:0;animation:reveal 0.9s ease 0.55s forwards}
+.hat-speech{font-family:'Noto Serif SC',serif;font-size:16px;font-weight:400;line-height:2;color:var(--ink);max-width:560px;margin:0 auto 32px;text-align:left;border-left:1px solid var(--gold);padding:6px 22px;opacity:0;animation:reveal 0.9s ease 0.7s forwards}
+.hat-speech em{font-style:italic;color:var(--gold)}
+.traits{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;opacity:0;animation:reveal 0.9s ease 0.85s forwards}
+.trait{font-family:'Noto Serif SC',serif;font-size:12.5px;letter-spacing:0.3em;color:var(--gold);padding:8px 18px 8px 24px;border:1px solid var(--gold-dim)}
+.section-divider{display:flex;align-items:center;justify-content:center;gap:16px;margin:64px 0 36px;opacity:0;animation:reveal 0.9s ease 1.05s forwards}
+.section-divider::before,.section-divider::after{content:"";flex:1;height:1px;background:var(--border);max-width:70px}
+.section-divider .cn{font-family:'Noto Serif SC',serif;font-weight:500;font-size:13px;letter-spacing:0.4em;color:var(--gold);padding-left:0.4em}
+.section-divider .en{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;letter-spacing:0.25em;color:var(--ink-mute)}
+.radar-wrap{opacity:0;animation:reveal 0.9s ease 1.15s forwards}
+.radar-svg{width:100%;max-width:460px;height:auto;display:block;margin:0 auto 12px}
+.radar-svg .label-cn{font-family:'Noto Serif SC',serif;font-weight:500;font-size:14px;fill:var(--ink);letter-spacing:2px}
+.radar-svg .label-en{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:10px;letter-spacing:2px;fill:var(--ink-mute)}
+#radar-polygon{opacity:0;animation:polyFade 1s ease 1.55s forwards}
+@keyframes polyFade{to{opacity:1}}
+.dim-list{max-width:460px;margin:22px auto 0;display:grid;grid-template-columns:repeat(2,1fr);gap:14px 32px}
+.dim-row{display:flex;align-items:center;gap:12px;font-family:'Noto Serif SC',serif;font-size:13px;color:var(--ink-dim)}
+.dim-name{letter-spacing:0.22em;min-width:38px;text-align:left}
+.dim-bar{flex:1;height:1px;background:var(--border);position:relative;overflow:hidden}
+.dim-fill{position:absolute;left:0;top:0;bottom:0;width:100%;background:var(--gold);transform:scaleX(0);transform-origin:left;animation:dimGrow 1.1s cubic-bezier(0.65,0,0.35,1) 1.7s forwards}
+@keyframes dimGrow{to{transform:scaleX(var(--pct,0))}}
+.dim-val{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);letter-spacing:1px;min-width:36px;text-align:right;font-size:14px}
+.celebrity-card{border:1px solid var(--border);padding:34px 30px;text-align:left;position:relative;opacity:0;animation:reveal 0.9s ease 1.35s forwards;background:linear-gradient(160deg,rgba(201,162,74,0.04),transparent 60%)}
+.celebrity-card::after{content:"";position:absolute;top:-1px;right:-1px;width:22px;height:22px;border-top:1px solid var(--gold);border-right:1px solid var(--gold);opacity:0.6}
+.celebrity-card::before{content:"";position:absolute;bottom:-1px;left:-1px;width:22px;height:22px;border-bottom:1px solid var(--gold);border-left:1px solid var(--gold);opacity:0.6}
+.match-head{text-align:center;margin-bottom:22px}
+.match-name{font-family:'Noto Serif SC',serif;font-weight:600;font-size:32px;letter-spacing:0.4em;padding-left:0.4em;color:var(--gold)}
+.match-name-en{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;letter-spacing:0.22em;color:var(--ink-dim);margin-top:6px}
+.similarity{text-align:center;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:22px 0 20px;margin:22px 0 26px}
+.sim-label{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;letter-spacing:0.38em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.sim-value{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:64px;color:var(--gold);line-height:1}
+.sim-value sup{font-size:0.38em;vertical-align:super;margin-left:2px;font-style:italic;color:var(--gold-soft)}
+.match-body{font-size:14.5px;line-height:1.9;color:var(--ink-dim)}
+.match-body .row{margin-bottom:14px}
+.match-body .row:last-child{margin-bottom:0}
+.row-label{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;letter-spacing:0.32em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:4px}
+.match-signature{margin-top:18px;padding:16px 20px;background:rgba(201,162,74,0.04);border-left:2px solid var(--gold)}
+.match-signature .sig-title{font-family:'Noto Serif SC',serif;font-weight:500;color:var(--ink);font-size:14.5px;line-height:1.75;margin-bottom:6px}
+.match-signature .sig-note{font-size:13px;line-height:1.75;color:var(--ink-dim);font-style:italic}
+.r-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:54px;opacity:0;animation:reveal 0.9s ease 1.5s forwards}
+@media(max-width:640px){.corner{display:none}main{padding:48px 18px}.option{padding:17px 18px;font-size:14.5px}.option:hover{padding-left:26px}.hat-speech{padding:4px 16px;font-size:15px;line-height:1.9}.crest{width:100px;height:100px;line-height:96px;font-size:46px}.btn{padding:16px 26px;font-size:13px;letter-spacing:0.3em}.intro-text{font-size:15px}.dim-list{grid-template-columns:1fr;gap:10px}.sim-value{font-size:54px}.match-name{font-size:26px;letter-spacing:0.32em;padding-left:0.32em}.celebrity-card{padding:26px 20px}.radar-svg .label-en{display:none}}
+</style>
+</head>
+<body>
+<div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+<main>
+  <section id="screen-intro" class="screen intro active">
+    <div class="eyebrow">The Sorting Hat · for Debaters</div>
+    <h1 class="title">辩手&nbsp;<em>分院</em>&nbsp;仪式</h1>
+    <div class="subtitle-en">Which Kind of Debater Are You?</div>
+    <div class="divider"></div>
+    <p class="intro-text">「戴上这顶古老的帽子吧——<br>让它<span class="accent">听见你思维深处的回声</span>，<br>把你，送入最属于你的那一方阵营。」<br><br>十五题之后，你将看到自己的偏好画像，<br>以及华语辩坛中，那位与你最相似的名家。</p>
+    <button class="btn appear" onclick="start()">戴&nbsp;上&nbsp;分&nbsp;院&nbsp;帽</button>
+    <div class="intro-meta">15&nbsp;Questions&nbsp;·&nbsp;约&nbsp;5&nbsp;分钟</div>
+  </section>
+  <section id="screen-quiz" class="screen">
+    <div class="progress-bar"><span id="progress-text">01 / 15</span><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div>
+    <div class="q-tag" id="q-tag">Question 01</div>
+    <h2 class="q-text" id="q-text"></h2>
+    <div class="options" id="q-options"></div>
+  </section>
+  <section id="screen-sorting" class="screen sorting">
+    <div class="sorting-crest">理&nbsp;·&nbsp;辞&nbsp;·&nbsp;锋&nbsp;·&nbsp;谋</div>
+    <div class="sorting-text">THE&nbsp;HAT&nbsp;IS&nbsp;THINKING</div>
+    <div class="sorting-cn">分&nbsp;&nbsp;院&nbsp;&nbsp;帽&nbsp;&nbsp;沉&nbsp;&nbsp;思&nbsp;&nbsp;中</div>
+    <div class="sorting-dots"><span></span><span></span><span></span></div>
+  </section>
+  <section id="screen-result" class="screen result">
+    <div class="eyebrow" style="animation-delay:0.05s">Your House</div>
+    <div class="crest" id="r-crest">理</div>
+    <h2 class="r-title" id="r-title"></h2>
+    <div class="r-title-en" id="r-title-en"></div>
+    <div class="hat-speech" id="r-speech"></div>
+    <div class="traits" id="r-traits"></div>
+    <div class="section-divider"><span class="cn">偏&nbsp;好&nbsp;画&nbsp;像</span><span class="en">Your Profile</span></div>
+    <div class="radar-wrap">
+      <svg class="radar-svg" viewBox="0 0 460 380" xmlns="http://www.w3.org/2000/svg">
+        <g id="radar-grid"></g>
+        <polygon id="radar-polygon" points="" fill="rgba(201,162,74,0.22)" stroke="#c9a24a" stroke-width="1.4"/>
+        <g id="radar-dots"></g>
+        <g id="radar-labels">
+          <text class="label-cn" x="230" y="48"  text-anchor="middle">逻辑</text>
+          <text class="label-cn" x="358" y="126" text-anchor="start">锐度</text>
+          <text class="label-cn" x="358" y="266" text-anchor="start">攻势</text>
+          <text class="label-cn" x="230" y="348" text-anchor="middle">人文</text>
+          <text class="label-cn" x="102" y="266" text-anchor="end">辞采</text>
+          <text class="label-cn" x="102" y="126" text-anchor="end">谋略</text>
+          <text class="label-en" x="230" y="64"  text-anchor="middle">LOGIC</text>
+          <text class="label-en" x="358" y="140" text-anchor="start">SHARPNESS</text>
+          <text class="label-en" x="358" y="280" text-anchor="start">OFFENSE</text>
+          <text class="label-en" x="230" y="364" text-anchor="middle">PATHOS</text>
+          <text class="label-en" x="102" y="280" text-anchor="end">RHETORIC</text>
+          <text class="label-en" x="102" y="140" text-anchor="end">STRATEGY</text>
+        </g>
+      </svg>
+      <div class="dim-list" id="dim-list"></div>
+    </div>
+    <div class="section-divider"><span class="cn">最&nbsp;相&nbsp;似&nbsp;的&nbsp;华&nbsp;语&nbsp;辩&nbsp;手</span><span class="en">Closest Match</span></div>
+    <div class="celebrity-card">
+      <div class="match-head">
+        <div class="match-name" id="m-name"></div>
+        <div class="match-name-en" id="m-name-en"></div>
+      </div>
+      <div class="similarity">
+        <div class="sim-label">相似度 · Similarity</div>
+        <div class="sim-value"><span id="m-sim">—</span><sup>%</sup></div>
+      </div>
+      <div class="match-body">
+        <div class="row"><span class="row-label">Background</span><span id="m-bio"></span></div>
+        <div class="row"><span class="row-label">Style</span><span id="m-style"></span></div>
+        <div class="match-signature">
+          <div class="row-label">Signature Match</div>
+          <div class="sig-title" id="m-sig-title"></div>
+          <div class="sig-note" id="m-sig-note"></div>
+        </div>
+      </div>
+    </div>
+    <div class="r-actions">
+      <button class="btn ghost" onclick="restart()">重&nbsp;新&nbsp;测&nbsp;试</button>
+      <button class="btn" onclick="share(event)">复&nbsp;制&nbsp;结&nbsp;果</button>
+    </div>
+  </section>
+</main>
+<script>
+// ============== 15 Questions ==============
+// L=逻辑剑客, O=烛火诗人, H=锋芒猎手, S=棋局执子者
+const questions = [
+  { q: "拿到一个陌生的辩题，你的第一反应？", options: [
+    { t: "冲向资料库，先搭建清晰的逻辑框架",     type: "L" },
+    { t: "思考议题背后的价值冲突与人的处境",     type: "O" },
+    { t: "预判对方立论，开始寻找攻击切入点",     type: "H" },
+    { t: "评估双方胜率，构思整体战术分工",       type: "S" }]},
+  { q: "比赛中最让你热血沸腾的瞬间？", options: [
+    { t: "一道严密推演，让对方哑口无言",         type: "L" },
+    { t: "结辩时，点燃全场的共鸣与沉默",         type: "O" },
+    { t: "质询中，精准抓住对方的破绽",           type: "H" },
+    { t: "战术配合，打出教科书般的压制",         type: "S" }]},
+  { q: "你认为一名好辩手最不可或缺的是？", options: [
+    { t: "清晰的逻辑与严密的论证",               type: "L" },
+    { t: "深刻的价值与动人的表达",               type: "O" },
+    { t: "敏锐的反应与凌厉的质询",               type: "H" },
+    { t: "冷静的判断与全局的眼光",               type: "S" }]},
+  { q: "赛前准备，你花最多时间在哪一块？", options: [
+    { t: "梳理论证链，寻找数据与文献",           type: "L" },
+    { t: "打磨语言，雕刻例证与金句",             type: "O" },
+    { t: "模拟对方立论，准备质询套路",           type: "H" },
+    { t: "拟定全盘战术与攻防节奏",               type: "S" }]},
+  { q: "最让你头皮发麻的对手，是哪一种？", options: [
+    { t: "逻辑锁链严丝合缝，滴水不漏",           type: "L" },
+    { t: "价值牌打得荡气回肠，令人动摇",         type: "O" },
+    { t: "质询快如刀锋，追击不留余地",           type: "H" },
+    { t: "战术诡谲多变，节奏难以捉摸",           type: "S" }]},
+  { q: "如果可以挑，你心目中最理想的辩位是？", options: [
+    { t: "一辩 — 立论定调，奠定战局",            type: "L" },
+    { t: "四辩 — 结辩升华，一锤定音",            type: "O" },
+    { t: "二辩 — 质询攻击，锋芒毕露",            type: "H" },
+    { t: "三辩 — 自由搏击，掌控全局",            type: "S" }]},
+  { q: "结辩时，你最想用什么方式说服评委？", options: [
+    { t: "精准回扣每一条交锋，用逻辑收束战场",   type: "L" },
+    { t: "升华到人类共同的处境，点燃情感共鸣",   type: "O" },
+    { t: "抛出一个让对方无法回答的终极反问",     type: "H" },
+    { t: "总结我方战果，并指出对方避而不答之处", type: "S" }]},
+  { q: "练辩时，哪一件事最让你沉迷？", options: [
+    { t: "拆解一个复杂的定义或概念",             type: "L" },
+    { t: "雕琢一段能打动人心的表达",             type: "O" },
+    { t: "演练质询的节奏、陷阱与追问",           type: "H" },
+    { t: "推演整盘攻防与队友分工",               type: "S" }]},
+  { q: "看过的辩论赛里，你最容易记住哪一种画面？", options: [
+    { t: "一张论证结构图，清晰得像几何证明",     type: "L" },
+    { t: "一句沉默全场的结语",                   type: "O" },
+    { t: "一波凌厉的连续质询",                   type: "H" },
+    { t: "双方你来我往、张弛有度的全场拉锯",     type: "S" }]},
+  { q: "面对一个你完全陌生的辩题方向，你会？", options: [
+    { t: "大量阅读资料，先建立知识地图",         type: "L" },
+    { t: "想象议题涉及的真实的人、生活、故事",   type: "O" },
+    { t: "研究对方可能的论点，准备反击手牌",     type: "H" },
+    { t: "先跟队友开会，定方向再分工",           type: "S" }]},
+  { q: "你最想让队友这样评价你——", options: [
+    { t: "「跟他辩论，有种和学者聊天的感觉」",   type: "L" },
+    { t: "「她一开口，你会忍不住认真听」",       type: "O" },
+    { t: "「他的质询，对方真的会怕」",           type: "H" },
+    { t: "「有他在阵里，大家就不慌」",           type: "S" }]},
+  { q: "比赛结束，复盘时你最常检讨自己的是？", options: [
+    { t: "论证链不够严密，哪里还能更紧",         type: "L" },
+    { t: "表达不够打动人，哪里还能更深",         type: "O" },
+    { t: "质询没有穷尽，哪里本该追下去",         type: "H" },
+    { t: "节奏和策略失控，哪一步走错了",         type: "S" }]},
+  { q: "你心中「赢得漂亮」的标准，更偏向哪一种？", options: [
+    { t: "全场论证无懈可击，对方无从反驳",       type: "L" },
+    { t: "立场背后的价值被听众深刻认同",         type: "O" },
+    { t: "把对方反复质询到破防",                 type: "H" },
+    { t: "整场节奏牢牢握在我方手中",             type: "S" }]},
+  { q: "以下哪种「风格」最让你着迷？", options: [
+    { t: "严密的学术写作与哲学思辨",             type: "L" },
+    { t: "有温度、有诗意的文字与演讲",           type: "O" },
+    { t: "犀利的时评与锋利的质询",               type: "H" },
+    { t: "围棋式的攻防与兵法策略",               type: "S" }]},
+  { q: "如果辩论是一种武器，你手里的那件是？", options: [
+    { t: "一把精密的手术刀 — 每一刀都讲究位置",  type: "L" },
+    { t: "一支沾着墨的笔 — 落字即成风骨",        type: "O" },
+    { t: "一柄出鞘即见血的短刃 — 以快破敌",      type: "H" },
+    { t: "一张运筹帷幄的军旗 — 统御全盘",        type: "S" }]}
+];
+
+// ============== Archetypes + matched debaters ==============
+const archetypes = {
+  L: {
+    sigil: "理", title: "逻辑剑客", titleEn: "The Logician",
+    speech: "分院帽低声道——<br><br>「你的思维，如一柄精锻的长剑。你信奉推理的锋利、证据的重量，不被情绪左右，不被辞藻迷惑。<em>在你眼中，每一句结论都必须经得起因果的拷问。</em>当对手的论点出现哪怕一丝裂痕，你便能以最干净的一刀，将它划开。」<br><br>理据即你的铠甲，逻辑是你的剑。",
+    traits: ["严谨", "清晰", "冷静", "深思"],
+    proto: [10, 2, 1, 2],
+    match: {
+      name: "詹青云", nameEn: "Zhan Qingyun",
+      bio: "贵州人，本科毕业于香港中文大学，哈佛大学法学博士；2018 年国际华语辩论邀请赛最佳辩手，2019 年《奇葩说》第六季 BBKing。",
+      style: "她的辩论像一份精炼的法庭陈词——考据扎实、引经据典、层层推进。冷静克制却杀伤力惊人，每一句话都在为结论铺路。",
+      sigTitle: "《奇葩说》第六季 · 「知识共享」对阵陈铭",
+      sigNote: "被视为近十年华语辩坛最经典的现场之一——严谨逻辑派与人文感召派的正面对撞。"
+    }
+  },
+  O: {
+    sigil: "辞", title: "烛火诗人", titleEn: "The Orator",
+    speech: "分院帽轻声道——<br><br>「你的言辞，是一支在风中不灭的烛火。你看得见每一个辩题背后，<em>那些真实的人、真实的痛与真实的光。</em>你用故事唤醒共鸣，用意象照亮真相。当你开口，评委的笔会停下，对手的呼吸会慢下来。」<br><br>以情动人，以意驭言——这是你最深的武器。",
+    traits: ["感性", "洞察", "富感染力", "人文"],
+    proto: [2, 10, 1, 2],
+    match: {
+      name: "陈铭", nameEn: "Chen Ming",
+      bio: "武汉大学辩论队出身；2014 年国际大学群英辩论会全程最佳辩手；2018 年《奇葩说》第五季 BBKing。",
+      style: "以「站在人类的肩膀上」闻名——擅长把辩题拉升到文明、价值与人性的高度，语言优雅，情感深沉，被誉为华语辩坛价值派代表。",
+      sigTitle: "《奇葩说》第六季 · 「知识共享」对阵詹青云",
+      sigNote: "以人文温度对抗法律式逻辑，是价值派辩风的巅峰之作，也是近年最广为流传的思辨现场。"
+    }
+  },
+  H: {
+    sigil: "锋", title: "锋芒猎手", titleEn: "The Hunter",
+    speech: "分院帽笑了一声——<br><br>「有意思，又一个嗜战的灵魂。质询台是你的猎场，每一个问题都是精心埋下的陷阱。<em>你眼神犀利，反应极快，</em>擅长在对手最自信的地方，找到他们最脆弱的缝隙。你不只是在辩论——你是在狩猎。」<br><br>锋刃在手，战意长存。",
+    traits: ["敏捷", "犀利", "好斗", "洞察入微"],
+    proto: [1, 2, 10, 2],
+    match: {
+      name: "马薇薇", nameEn: "Ma Weiwei",
+      bio: "中山大学辩论队出身；2003 年国际大专辩论会冠军队主力；2014 年《奇葩说》第一季 BBKing。",
+      style: "被誉为「华语辩坛毒舌女王」——质询如刀、反应极快、情感浓度高，擅长撕开论点里的虚假与伪善，语气冷峻而精准。",
+      sigTitle: "2003 国际大专辩论会 · 中山大学夺冠历程；《奇葩说》第一季多场经典辩论",
+      sigNote: "2003 年的夺冠之战奠定了一代辩手的战斗美学；《奇葩说》第一季则让这份锋芒走入更广阔的公共视野。"
+    }
+  },
+  S: {
+    sigil: "谋", title: "棋局执子者", titleEn: "The Strategist",
+    speech: "分院帽沉吟片刻——<br><br>「你站在棋盘之上，看着双方每一子的落点。<em>你不迷信一时的精彩，</em>因为你知道，赢下一场比赛从来不靠一句漂亮话，而是靠整盘的调度与耐心。你是队伍里那个冷静到近乎冷峻的人——当你落下最后一子，全场都会明白，胜负早已写定。」<br><br>一子千机，全盘皆活。",
+    traits: ["沉稳", "大局观", "决断", "领袖气"],
+    proto: [3, 1, 1, 10],
+    match: {
+      name: "胡渐彪", nameEn: "Hu Jianbiao",
+      bio: "马来亚大学辩论队出身；2001 年国际大专辩论会冠军队主力；后为资深辩论教练，米果文化联合创始人。",
+      style: "冷静、全局、决断——典型的队长型辩手。他的每一步都在棋盘上的计算之中，不求一时风头，只求全盘掌控。",
+      sigTitle: "2001 国际大专辩论会 · 马来亚大学夺冠历程",
+      sigNote: "教科书级别的战术调度与节奏把控，被许多华语辩手视为战略派辩风的经典样本。"
+    }
+  }
+};
+
+// ============== State + logic ==============
+const screens = {
+  intro:   document.getElementById('screen-intro'),
+  quiz:    document.getElementById('screen-quiz'),
+  sorting: document.getElementById('screen-sorting'),
+  result:  document.getElementById('screen-result')
+};
+let current = 0;
+const scores = { L: 0, O: 0, H: 0, S: 0 };
+
+function show(name) {
+  Object.values(screens).forEach(s => s.classList.remove('active'));
+  screens[name].classList.add('active');
+}
+
+function start() {
+  current = 0;
+  scores.L = scores.O = scores.H = scores.S = 0;
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  document.getElementById('q-tag').textContent = 'Question ' + String(current + 1).padStart(2, '0');
+  document.getElementById('progress-text').textContent =
+    String(current + 1).padStart(2, '0') + ' / ' + String(questions.length).padStart(2, '0');
+  document.getElementById('progress-fill').style.transform = 'scaleX(' + (current / questions.length) + ')';
+  document.getElementById('q-text').textContent = q.q;
+
+  const container = document.getElementById('q-options');
+  container.innerHTML = '';
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.style.opacity = '0';
+    btn.style.animation = 'reveal 0.5s ease ' + (0.12 + idx * 0.08) + 's forwards';
+    btn.innerHTML = '<span class="mark">' + String.fromCharCode(65 + idx) + '.</span><span>' + opt.t + '</span>';
+    btn.addEventListener('click', () => select(opt.type));
+    container.appendChild(btn);
+  });
+}
+
+function select(type) {
+  scores[type] += 1;
+  current += 1;
+  if (current < questions.length) {
+    document.getElementById('progress-fill').style.transform = 'scaleX(' + (current / questions.length) + ')';
+    screens.quiz.classList.remove('active');
+    void screens.quiz.offsetWidth;
+    screens.quiz.classList.add('active');
+    renderQuestion();
+  } else {
+    document.getElementById('progress-fill').style.transform = 'scaleX(1)';
+    show('sorting');
+    setTimeout(() => { show('result'); renderResult(); }, 2200);
+  }
+}
+
+// 6-dim radar scoring
+function computeDims(s) {
+  const clamp = v => Math.max(0, Math.min(100, Math.round(v * 100)));
+  return {
+    logic:    clamp((s.L * 1.0 + s.S * 0.4) / 15),
+    sharpness:clamp((s.H * 0.6 + s.L * 0.3) / 9),
+    offense:  clamp((s.H * 1.0) / 15),
+    pathos:   clamp((s.O * 1.0) / 15),
+    rhetoric: clamp((s.O * 0.8 + s.L * 0.1) / 12),
+    strategy: clamp((s.S * 1.0 + s.H * 0.2) / 15)
+  };
+}
+
+// 4-D Euclidean similarity with matched prototype
+function similarity(s, proto) {
+  const d2 = Math.pow(s.L - proto[0], 2) + Math.pow(s.O - proto[1], 2)
+           + Math.pow(s.H - proto[2], 2) + Math.pow(s.S - proto[3], 2);
+  const dist = Math.sqrt(d2);
+  const maxDist = Math.sqrt(4 * 225); // sqrt(900) = 30
+  return Math.round((1 - dist / maxDist) * 100);
+}
+
+// Build radar SVG (grid + user polygon)
+function buildRadar(dims) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const cx = 230, cy = 190, r = 130;
+  const grid = document.getElementById('radar-grid');
+  grid.innerHTML = '';
+
+  [0.2, 0.4, 0.6, 0.8, 1.0].forEach(p => {
+    const pts = [];
+    for (let i = 0; i < 6; i++) {
+      const a = (i * 60 - 90) * Math.PI / 180;
+      pts.push((cx + r * p * Math.cos(a)).toFixed(1) + ',' + (cy + r * p * Math.sin(a)).toFixed(1));
+    }
+    const poly = document.createElementNS(NS, 'polygon');
+    poly.setAttribute('points', pts.join(' '));
+    poly.setAttribute('fill', 'none');
+    poly.setAttribute('stroke', p === 1 ? 'rgba(201,162,74,0.35)' : 'rgba(243,232,207,0.07)');
+    poly.setAttribute('stroke-width', '1');
+    grid.appendChild(poly);
+  });
+
+  for (let i = 0; i < 6; i++) {
+    const a = (i * 60 - 90) * Math.PI / 180;
+    const line = document.createElementNS(NS, 'line');
+    line.setAttribute('x1', cx);
+    line.setAttribute('y1', cy);
+    line.setAttribute('x2', (cx + r * Math.cos(a)).toFixed(1));
+    line.setAttribute('y2', (cy + r * Math.sin(a)).toFixed(1));
+    line.setAttribute('stroke', 'rgba(243,232,207,0.08)');
+    line.setAttribute('stroke-width', '1');
+    grid.appendChild(line);
+  }
+
+  const order = ['logic', 'sharpness', 'offense', 'pathos', 'rhetoric', 'strategy'];
+  const userPts = [];
+  const dotsGroup = document.getElementById('radar-dots');
+  dotsGroup.innerHTML = '';
+
+  order.forEach((k, i) => {
+    const a = (i * 60 - 90) * Math.PI / 180;
+    const p = dims[k] / 100;
+    const x = cx + r * p * Math.cos(a);
+    const y = cy + r * p * Math.sin(a);
+    userPts.push(x.toFixed(1) + ',' + y.toFixed(1));
+
+    const dot = document.createElementNS(NS, 'circle');
+    dot.setAttribute('cx', x.toFixed(1));
+    dot.setAttribute('cy', y.toFixed(1));
+    dot.setAttribute('r', '3');
+    dot.setAttribute('fill', '#c9a24a');
+    dot.style.opacity = '0';
+    dot.style.animation = 'polyFade 0.6s ease ' + (1.7 + i * 0.05) + 's forwards';
+    dotsGroup.appendChild(dot);
+  });
+
+  document.getElementById('radar-polygon').setAttribute('points', userPts.join(' '));
+}
+
+function buildDimList(dims) {
+  const list = document.getElementById('dim-list');
+  list.innerHTML = '';
+  const items = [
+    ['逻辑', 'logic'], ['锐度', 'sharpness'], ['攻势', 'offense'],
+    ['人文', 'pathos'], ['辞采', 'rhetoric'], ['谋略', 'strategy']
+  ];
+  items.forEach(([cn, key]) => {
+    const v = dims[key];
+    const row = document.createElement('div');
+    row.className = 'dim-row';
+    row.innerHTML = '<span class="dim-name">' + cn + '</span>' +
+                    '<span class="dim-bar"><span class="dim-fill" style="--pct:' + (v / 100) + '"></span></span>' +
+                    '<span class="dim-val">' + v + '</span>';
+    list.appendChild(row);
+  });
+}
+
+function renderResult() {
+  let topKey = 'L', topVal = -1;
+  for (const k in scores) {
+    if (scores[k] > topVal) { topVal = scores[k]; topKey = k; }
+  }
+  const r = archetypes[topKey];
+
+  document.getElementById('r-crest').textContent = r.sigil;
+  document.getElementById('r-title').textContent = r.title;
+  document.getElementById('r-title-en').textContent = r.titleEn;
+  document.getElementById('r-speech').innerHTML = r.speech;
+
+  const t = document.getElementById('r-traits');
+  t.innerHTML = '';
+  r.traits.forEach(x => {
+    const span = document.createElement('span');
+    span.className = 'trait';
+    span.textContent = x;
+    t.appendChild(span);
+  });
+
+  const dims = computeDims(scores);
+  buildRadar(dims);
+  buildDimList(dims);
+
+  const sim = similarity(scores, r.proto);
+  document.getElementById('m-name').textContent = r.match.name;
+  document.getElementById('m-name-en').textContent = r.match.nameEn;
+  document.getElementById('m-sim').textContent = sim;
+  document.getElementById('m-bio').textContent = r.match.bio;
+  document.getElementById('m-style').textContent = r.match.style;
+  document.getElementById('m-sig-title').textContent = r.match.sigTitle;
+  document.getElementById('m-sig-note').textContent = r.match.sigNote;
+
+  window._topResult = { r, sim };
+}
+
+function restart() { show('intro'); }
+
+function share(ev) {
+  const data = window._topResult;
+  if (!data) return;
+  const { r, sim } = data;
+  const text =
+    '在「辩手分院仪式」中，我被分入 ——\n' +
+    '【' + r.title + ' · ' + r.titleEn + '】\n\n' +
+    '与华语辩坛 · ' + r.match.name + ' 相似度：' + sim + '%\n' +
+    '代表比赛：' + r.match.sigTitle + '\n\n' +
+    '你也来戴上这顶帽子吧。';
+
+  const btn = ev.currentTarget;
+  const original = btn.innerHTML;
+  const done = () => {
+    btn.innerHTML = '已&nbsp;复&nbsp;制&nbsp;✓';
+    setTimeout(() => { btn.innerHTML = original; }, 2000);
+  };
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    done();
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(done).catch(fallback);
+  } else {
+    fallback();
+  }
+}
+</script>
+</body>
+</html>
